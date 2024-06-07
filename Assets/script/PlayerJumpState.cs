@@ -11,9 +11,9 @@ public class PlayerJumpState : PlayerAirState
     {
         base.Enter();
         player.setVelocity(rb.velocity.x, jumpHight);
-        Debug.Log($"jump{rb.velocity}");
+        // Debug.Log($"jump{rb.velocity}");
         
-        Debug.Log($"jump {anim.GetBool("Jump")}");
+        // Debug.Log($"jump {anim.GetBool("Jump")}");
         // Debug.Log($"jump {anim.GetBool(animBoolName)}");
     }
 

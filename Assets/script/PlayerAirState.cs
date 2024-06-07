@@ -22,10 +22,13 @@ public class PlayerAirState : PlayerState
     {
         base.Update();
 
-        if (!player.IsGroundDetected() || rb.velocity.y > 0) //这里用触点法做修改
+        if (!player.IsGroundDetected)
             anim.SetFloat("yVelocity", yVelocity);
         else
+        {
+            Debug.Log("transform to Idle");
             stateMachine.ChangeState(player.playerIdleState);
+        }
         
         player.setVelocity(xInput * moveSpeed, rb.velocity.y);
     }

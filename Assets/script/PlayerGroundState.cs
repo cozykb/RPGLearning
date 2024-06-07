@@ -23,9 +23,16 @@ public class PlayerGroundState : PlayerState
     public override void Update()
     {
         base.Update();
-        if (spaceDown && player.IsGroundDetected())
+        if (spaceDown && player.IsGroundDetected)
+        //这里会有一帧的IsGroundDetected=true被传入。
         {   
+            player.SetIsGround(false);
+            //解决被传入的一帧IsGroundDetected=true
             stateMachine.ChangeState(player.playerJumpState);
+        }
+        if (!player.IsGroundDetected)
+        {
+            stateMachine.ChangeState(player.playerFallState);
         }
     }
 }
