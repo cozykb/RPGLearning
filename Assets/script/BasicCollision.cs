@@ -5,10 +5,33 @@ using UnityEngine;
 public class BasicCollision : MonoBehaviour
 {
     // Start is called before the first frame update
+    #region variables
+    private float faceDirection = 1;
+    private bool isRight = true;
+    public Rigidbody2D rb { get; private set; }
+    public Animator anim { get; private set; }
+    #endregion variables
+
+    #region collision
+    // [Header("Collision check")]
+    // [SerializeField] private Transform groundCheck;
+    // [SerializeField] private float groundCheckDistance;
+    // [SerializeField] private Transform wallCheck;
+    // [SerializeField] private float wallCheckDistance;
+    // [SerializeField] private LayerMask layerMask;
+
+    #endregion collision
     public bool IsGroundDetected { get; private set; } 
     public bool IsAttachToWall {get; private set; }
     public int WallAttachedDirection {get; private set; }
     public Vector2 CollisionDirection {get; private set;}
+
+    protected virtual void Start()
+    //初始化函数，在所有Awake函数运行完之后（一般是这样，但不一定），在所有Update函数前系统自动条用。一般用来给变量赋值。
+    {
+        rb = GetComponent<Rigidbody2D>();
+        anim = GetComponentInChildren<Animator>();
+    }
 
     protected virtual void OnCollisionEnter2D(Collision2D _collision)
     {
@@ -41,7 +64,7 @@ public class BasicCollision : MonoBehaviour
             CollisionDirection += _collision.GetContact(i).normal;
         }
         CollisionDirection.Normalize();
-        Debug.Log($"CD : {CollisionDirection}");
+        // Debug.Log($"CD : {CollisionDirection}");
     }
 
     protected virtual void GroundDetector(Vector2 _collisionDirection)
@@ -49,12 +72,12 @@ public class BasicCollision : MonoBehaviour
         IsGroundDetected = false;
         if (_collisionDirection.y > 0)
         {   
-            Debug.Log("IsGroundDetected = true;");
+            // Debug.Log("IsGroundDetected = true;");
             IsGroundDetected = true;
         }
         else
         {
-            Debug.Log("IsGroundDetected = false;");
+            // Debug.Log("IsGroundDetected = false;");
             IsGroundDetected = false;
         }
     }
@@ -80,5 +103,27 @@ public class BasicCollision : MonoBehaviour
     public void SetIsGround(bool _value)
     {
         IsGroundDetected = _value;
+    }
+
+    private void Flip(float _x)
+    {
+        if (_x < 0 && isRight)
+        {   
+            faceDirection *= -1;
+            isRight = !isRight;
+            transform.Rotate(0, 180, 0);
+        }
+        else if (_x > 0 && !isRight)
+        {
+            faceDirection *= -1;
+            isRight = !isRight;
+            transform.Rotate(0, 180, 0);
+        }
+    }
+    public void setVelocity(float _xVelocity, float _yVelocity)
+    //因为最终velocity的变更对象为player所以这个方法只能定义在player下
+    {
+        rb.velocity = new Vector2(_xVelocity, _yVelocity);
+        Flip(_xVelocity);
     }
 }

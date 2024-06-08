@@ -49,7 +49,6 @@ public class PlayerState
     {
         xInput = Input.GetAxis("Horizontal");
         spaceDown = Input.GetKeyDown(KeyCode.Space);
-        yVelocity = rb.velocity.y;
     }
 
     public virtual void Exit()
@@ -57,4 +56,11 @@ public class PlayerState
     {
         anim.SetBool(animBoolName, false);
     }
+
+    public virtual void FixedUpdate() 
+    {
+        yVelocity = rb.velocity.y;
+    }
+
+
 }

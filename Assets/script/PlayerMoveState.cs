@@ -11,22 +11,28 @@ public class PlayerMoveState : PlayerGroundState
     public override void Enter()
     {
         base.Enter();
+        Debug.Log("enter move state");
     }
     public override void Exit()
     {
         base.Exit();
+        Debug.Log("exit move state");
     }
 
     public override void Update()
     {
         base.Update();
-        
-        player.setVelocity(xInput * moveSpeed, rb.velocity.y);
-
+        Debug.Log("in move state update");
         if(xInput == 0)
         {
             stateMachine.ChangeState(player.playerIdleState);
         }
+        
+    }
+    public override void FixedUpdate()
+    {
+        Debug.Log("in move state fix update");
+        player.setVelocity(xInput * moveSpeed, rb.velocity.y);
 
     }
 }

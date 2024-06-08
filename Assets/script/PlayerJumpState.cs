@@ -11,6 +11,7 @@ public class PlayerJumpState : PlayerAirState
     {
         base.Enter();
         player.setVelocity(rb.velocity.x, jumpHight);
+        Debug.Log("enter jump");
         // Debug.Log($"jump{rb.velocity}");
         
         // Debug.Log($"jump {anim.GetBool("Jump")}");
@@ -20,10 +21,18 @@ public class PlayerJumpState : PlayerAirState
     public override void Exit()
     {
         base.Exit();
+        Debug.Log("in jump exit");
     }
 
     public override void Update()
-    {
+    {   
+        Debug.Log("jump");
         base.Update();
+        Debug.Log("in jump update");
+    }
+
+    public override void FixedUpdate()
+    {
+        base.FixedUpdate();
     }
 }

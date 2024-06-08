@@ -20,4 +20,14 @@ public class PlayerStateMachine
         currentState = _newState;
         currentState.Enter();  
     }
+
+    public void Update()
+    {
+        currentState.Update();
+    }
+
+    public void FixedUpdate()
+    {
+        currentState.FixedUpdate();
+    }
 }

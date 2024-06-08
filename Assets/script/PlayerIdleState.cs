@@ -32,4 +32,9 @@ public class PlayerIdleState : PlayerGroundState
             stateMachine.ChangeState(player.playerMoveState);
         }
     }
+    public override void FixedUpdate()
+    {
+        base.FixedUpdate();
+        player.setVelocity(0,0);
+    }
 }

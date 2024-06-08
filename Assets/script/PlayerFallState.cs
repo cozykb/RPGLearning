@@ -12,16 +12,24 @@ public class PlayerFallState : PlayerAirState
     public override void Enter()
     {
         base.Enter();
+        Debug.Log("enter fall state");
     }
 
     public override void Exit()
     {
         base.Exit();
+        Debug.Log("exit fall state");
     }
 
     public override void Update()
     {
         base.Update();
-        Debug.Log("Fall");
+        Debug.Log("in fall state update");
+    }
+
+    public override void FixedUpdate()
+    {
+        base.FixedUpdate();
+        Debug.Log("in fall state fix update");
     }
 }

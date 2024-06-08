@@ -30,9 +30,16 @@ public class PlayerGroundState : PlayerState
             //解决被传入的一帧IsGroundDetected=true
             stateMachine.ChangeState(player.playerJumpState);
         }
-        if (!player.IsGroundDetected)
-        {
+        else if (!player.IsGroundDetected)
+        {   
+            Debug.Log("to fall");
             stateMachine.ChangeState(player.playerFallState);
         }
+    }
+
+    public override void FixedUpdate()
+    {
+        base.FixedUpdate();
+
     }
 }
