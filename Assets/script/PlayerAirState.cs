@@ -26,7 +26,7 @@ public class PlayerAirState : PlayerState
             anim.SetFloat("yVelocity", yVelocity);
         else
         {
-            Debug.Log("transform to Idle");
+            Debug.Log("jump transform to Idle");
             stateMachine.ChangeState(player.playerIdleState);
         }
         

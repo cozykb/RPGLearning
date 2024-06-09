@@ -9,19 +9,21 @@ public class BasicCollision : MonoBehaviour
     private float faceDirection = 1;
     private bool isRight = true;
     public Rigidbody2D rb { get; private set; }
+    private CapsuleCollider2D myCollider;
     public Animator anim { get; private set; }
     #endregion variables
 
     #region collision
+    // [SerializeField] private LayerMask layerMask;
     // [Header("Collision check")]
     // [SerializeField] private Transform groundCheck;
     // [SerializeField] private float groundCheckDistance;
     // [SerializeField] private Transform wallCheck;
     // [SerializeField] private float wallCheckDistance;
-    // [SerializeField] private LayerMask layerMask;
 
     #endregion collision
     public bool IsGroundDetected { get; private set; } 
+    public bool IsGroundStay { get; private set; } 
     public bool IsAttachToWall {get; private set; }
     public int WallAttachedDirection {get; private set; }
     public Vector2 CollisionDirection {get; private set;}
@@ -31,13 +33,19 @@ public class BasicCollision : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponentInChildren<Animator>();
+        myCollider = GetComponent<CapsuleCollider2D>();
     }
-
+    protected virtual void Update()
+    {
+        IsGroundDetected = false;
+        IsAttachToWall = false;
+    }
     protected virtual void OnCollisionEnter2D(Collision2D _collision)
     {
         GetCollisionDirection(_collision);
         GroundDetector(CollisionDirection);
         WallDetector(CollisionDirection);
+        Debug.Log($"Enter ground : {IsGroundDetected}");
         // Debug.DrawLine(transform.position, new Vector3(transform.position.x + CollisionDirection.x, transform.position.y + CollisionDirection.y), Color.red, 0.1f);
     }
     protected virtual void OnCollisionExit2D(Collision2D _collision) 
@@ -45,31 +53,49 @@ public class BasicCollision : MonoBehaviour
         GetCollisionDirection(_collision);
         GroundDetector(CollisionDirection);
         WallDetector(CollisionDirection);
+        Debug.Log($"Exit ground : {IsGroundDetected}");
         // Debug.Log($"Exit :{CollisionDirection}");
     }
     protected virtual void OnCollisionStay2D(Collision2D _collision) 
     //性能角度考虑，这个部分可以不检测地面
     {
-        GetCollisionDirection(_collision);
-        // GroundDetector(CollisionDirection);
+        GetCollisionDirection(_collision, Color.blue);
+        // Debug.Log($"CD 2 : {CollisionDirection}");
+        GroundDetector(CollisionDirection);
         WallDetector(CollisionDirection);
+        Debug.Log($"stay ground : {IsGroundDetected}");
         // Debug.DrawLine(transform.position, new Vector3(transform.position.x + CollisionDirection.x, transform.position.y + CollisionDirection.y), Color.green, 0.1f);
     }
 
-    protected virtual void GetCollisionDirection(Collision2D _collision)
+    protected virtual void GetCollisionDirection(Collision2D _collision, Color? _color = null)
     {   
+        //靠墙时的检测是错误的
+        // if (_color == null)
+        //     _color = Color.red;
         CollisionDirection = Vector2.zero;
-        for (int i = 0; i < _collision.contactCount; i++)
+        // Debug.Log($"layer : {_collision.gameObject.layer}");
+        // Debug.Log($"getmask : {LayerMask.GetMask("Ground")}");
+        // Debug.Log($"name to layer : {LayerMask.NameToLayer("Ground")}");
+        //这里的layer是一个index
+        if (_collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
-            CollisionDirection += _collision.GetContact(i).normal;
+            for (int i = 0; i < _collision.contactCount; i++)
+            {   
+                // var CollisionDirectionPart = _collision.GetContact(i).normal;
+                // Debug.Log($"CD 4 : {i} ,{CollisionDirectionPart}");
+                CollisionDirection += _collision.GetContact(i).normal;
+                // Debug.Log($"CD 5 : {i} ,{ transform.position + new Vector3(CollisionDirectionPart.x, CollisionDirectionPart.y)}");
+                // Debug.DrawLine(transform.position, transform.position + new Vector3(CollisionDirectionPart.x, CollisionDirectionPart.y), (Color)_color, 1);
+            }
         }
+        // Debug.Log($"CD 3 : {CollisionDirection}");
         CollisionDirection.Normalize();
         // Debug.Log($"CD : {CollisionDirection}");
+        Debug.Log($"CD count : {_collision.contactCount}");
     }
 
     protected virtual void GroundDetector(Vector2 _collisionDirection)
     {   
-        IsGroundDetected = false;
         if (_collisionDirection.y > 0)
         {   
             // Debug.Log("IsGroundDetected = true;");
@@ -126,5 +152,40 @@ public class BasicCollision : MonoBehaviour
         rb.velocity = new Vector2(_xVelocity, _yVelocity);
         Flip(_xVelocity);
     }
-    
+
+    public void fixSetVelocity(float _xVelocity, float _yVelocity)
+    {
+        rb.velocity = new Vector2(_xVelocity, _yVelocity);
+        Flip(_xVelocity);
+        EdgeFix();
+    }
+
+    private Collider2D Hit(Vector2 _position)
+    {
+        return Physics2D.OverlapBox(_position, myCollider.bounds.size, 0, LayerMask.GetMask("Ground"));
+    }
+    private void EdgeFix()
+    {
+        //获取速度方向内预期的移动
+        Vector2 moveMent = rb.velocity * Time.fixedDeltaTime;
+        var futurePosition = transform.position + new Vector3(moveMent.x, moveMent.y);
+        Collider2D hit = Hit(futurePosition);
+        if (hit != null)
+        {
+            // Debug.Log($"hit pos : {hit.transform.position}"); 
+            //这东西是被撞击到的物体的transform
+            // Debug.Log($"cur pos : {transform.position}");
+            var fixPos = (transform.position - hit.transform.position).normalized;
+            Vector3 tryPos = transform.position + fixPos * moveMent.magnitude + new Vector3(moveMent.x, moveMent.y);
+            Debug.Log("try fix");
+            if (!IsGroundDetected && !Hit(tryPos))
+            {   
+                Debug.Log("fix");
+                transform.position = transform.position + fixPos * moveMent.magnitude;
+            }
+        }
+
+
+    }
+
 }

@@ -17,6 +17,7 @@ public class PlayerState
     protected Animator anim;
     protected float xInput;
     protected bool spaceDown;
+    protected bool isJump;
 
     public PlayerState(Player _player, PlayerStateMachine _stateMachine, string _animBoolName)  
     //这里接受Player的原因是需要从Player中读取类似于位置信息等内容
@@ -49,6 +50,10 @@ public class PlayerState
     {
         xInput = Input.GetAxis("Horizontal");
         spaceDown = Input.GetKeyDown(KeyCode.Space);
+        // 当通过fix update在单个state内更新状态时不能使用=
+        // 而是需要|=或等于，在fix update内将变量转化为false
+        // 以确保前后的正确同步
+        isJump |= spaceDown;
     }
 
     public virtual void Exit()

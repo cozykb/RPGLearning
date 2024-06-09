@@ -25,6 +25,10 @@ public class PlayerFallState : PlayerAirState
     {
         base.Update();
         Debug.Log("in fall state update");
+        if (rb.velocity.y == 0)
+        {
+            stateMachine.ChangeState(player.playerIdleState);
+        }
     }
 
     public override void FixedUpdate()

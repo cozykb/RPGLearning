@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerJumpState : PlayerAirState
-{
+{   
+    private bool setJump;
     public PlayerJumpState(Player _player, PlayerStateMachine _stateMachine, string _animBoolName) : base(_player, _stateMachine, _animBoolName)
     {
     }
     public override void Enter()
     {
         base.Enter();
-        player.setVelocity(rb.velocity.x, jumpHight);
+        setJump = true;
         Debug.Log("enter jump");
         // Debug.Log($"jump{rb.velocity}");
         
@@ -34,5 +35,8 @@ public class PlayerJumpState : PlayerAirState
     public override void FixedUpdate()
     {
         base.FixedUpdate();
+        if (setJump)
+            player.fixSetVelocity(rb.velocity.x, jumpHight);
+        setJump = false;
     }
 }

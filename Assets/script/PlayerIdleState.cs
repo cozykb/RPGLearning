@@ -35,6 +35,6 @@ public class PlayerIdleState : PlayerGroundState
     public override void FixedUpdate()
     {
         base.FixedUpdate();
-        player.setVelocity(0,0);
+        player.setVelocity(0,rb.velocity.y);
     }
 }

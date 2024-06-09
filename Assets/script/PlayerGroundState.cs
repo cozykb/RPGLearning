@@ -23,16 +23,17 @@ public class PlayerGroundState : PlayerState
     public override void Update()
     {
         base.Update();
-        if (spaceDown && player.IsGroundDetected)
+        if (isJump && (player.IsGroundDetected || player.IsAttachToWall))
         //这里会有一帧的IsGroundDetected=true被传入。
         {   
             player.SetIsGround(false);
             //解决被传入的一帧IsGroundDetected=true
             stateMachine.ChangeState(player.playerJumpState);
+            isJump = false;
         }
-        else if (!player.IsGroundDetected)
+        else if (!player.IsGroundDetected && rb.velocity.y != 0)
         {   
-            Debug.Log("to fall");
+            Debug.Log("jump to fall");
             stateMachine.ChangeState(player.playerFallState);
         }
     }
