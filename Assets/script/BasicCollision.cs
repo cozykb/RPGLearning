@@ -126,4 +126,5 @@ public class BasicCollision : MonoBehaviour
         rb.velocity = new Vector2(_xVelocity, _yVelocity);
         Flip(_xVelocity);
     }
+    
 }
