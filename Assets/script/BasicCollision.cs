@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class BasicCollision : MonoBehaviour
 {
     // Start is called before the first frame update
     #region variables
-    private float faceDirection = 1;
+    public int faceDirection{ get; private set; } = 1;
     private bool isRight = true;
     public Rigidbody2D rb { get; private set; }
     private CapsuleCollider2D myCollider;
@@ -146,16 +147,24 @@ public class BasicCollision : MonoBehaviour
             transform.Rotate(0, 180, 0);
         }
     }
-    public void setVelocity(float _xVelocity, float _yVelocity)
+    public void setVelocity(float _xVelocity, float _yVelocity, float maxAcceleration, float maxSpeed)
     //因为最终velocity的变更对象为player所以这个方法只能定义在player下
     {
         rb.velocity = new Vector2(_xVelocity, _yVelocity);
+        var acceleration = maxAcceleration * Time.fixedDeltaTime;
+        var targetSpeed = new Vector2(_xVelocity, _yVelocity) * maxSpeed;
+        rb.velocity = new Vector2(Mathf.MoveTowards(rb.velocity.x, targetSpeed.x, acceleration),
+                                    Mathf.MoveTowards(rb.velocity.y, targetSpeed.y, acceleration));
         Flip(_xVelocity);
     }
-
-    public void fixSetVelocity(float _xVelocity, float _yVelocity)
+    public void setGravity(float _gravity)
     {
-        rb.velocity = new Vector2(_xVelocity, _yVelocity);
+        rb.gravityScale = _gravity;
+    }
+
+    public void fixSetVelocity(float _xVelocity, float _yVelocity, float maxAcceleration, float maxSpeed)
+    {
+        setVelocity(_xVelocity, _yVelocity , maxAcceleration, maxSpeed);
         Flip(_xVelocity);
         EdgeFix();
     }
@@ -184,8 +193,7 @@ public class BasicCollision : MonoBehaviour
                 transform.position = transform.position + fixPos * moveMent.magnitude;
             }
         }
-
-
+    
     }
 
 }

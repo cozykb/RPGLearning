@@ -32,7 +32,7 @@ public class PlayerMoveState : PlayerGroundState
     public override void FixedUpdate()
     {
         Debug.Log("in move state fix update");
-        player.setVelocity(xInput * moveSpeed, rb.velocity.y);
+        player.setVelocity(xInput * moveSpeed, rb.velocity.y, 5, xInput * moveSpeed);
 
     }
 }

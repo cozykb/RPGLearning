@@ -14,14 +14,23 @@ public class Player : BasicCollision
     public float jumpHight;
     // public float airMoveSpeed;
     #endregion movement
-
+    #region Dash
+    [Header("Dash")]
+    public float dashSpeed;
+    public float dashCD;
+    public float dashDuration;
+    #endregion Dash
     #region states
     public PlayerState playerIdleState { get; private set; }
     public PlayerState playerMoveState { get; private set; }
     public PlayerState playerJumpState { get; private set; }
     public PlayerState playerFallState { get; private set; }
+    public PlayerState playerDashState { get; private set; }
     public PlayerStateMachine stateMachine { get; private set; }
     #endregion states
+    #region other
+    public int outGRoundTimer{ get; private set; }
+    #endregion other
 
 
     private void Awake()
@@ -32,6 +41,7 @@ public class Player : BasicCollision
         playerMoveState = new PlayerMoveState(this, stateMachine, "Move");
         playerJumpState = new PlayerJumpState(this, stateMachine, "Jump");
         playerFallState = new PlayerFallState(this, stateMachine, "Fall");
+        playerDashState = new PlayerDashState(this, stateMachine, "Dash");
     }
     protected override void Start() 
     {
@@ -40,7 +50,7 @@ public class Player : BasicCollision
     }
 
     // Update is called once per frame
-    private void Update()
+    protected override void Update()
     //这个地方利用stateMachine.currentState进行update以适应不同状态的切换
     {   
         stateMachine.Update();
@@ -49,6 +59,7 @@ public class Player : BasicCollision
     private void FixedUpdate()
     {
         stateMachine.FixedUpdate();
+        outGRoundTimer = IsGroundDetected ? 0 : outGRoundTimer + 1;
     }
 
 

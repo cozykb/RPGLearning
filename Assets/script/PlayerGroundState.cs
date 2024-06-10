@@ -23,11 +23,11 @@ public class PlayerGroundState : PlayerState
     public override void Update()
     {
         base.Update();
-        if (isJump && (player.IsGroundDetected || player.IsAttachToWall))
+        if (isJump && (player.IsGroundDetected || player.IsAttachToWall || player.outGRoundTimer < 5))
         //这里会有一帧的IsGroundDetected=true被传入。
         {   
             player.SetIsGround(false);
-            //解决被传入的一帧IsGroundDetected=true
+            //解决被传入的一帧IsGroundDetected=true,但没解决掉
             stateMachine.ChangeState(player.playerJumpState);
             isJump = false;
         }

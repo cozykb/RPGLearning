@@ -36,7 +36,7 @@ public class PlayerAirState : PlayerState
     {
         base.FixedUpdate();
 
-        player.setVelocity(xInput * moveSpeed, rb.velocity.y);
+        player.setVelocity(xInput * moveSpeed, rb.velocity.y, 5, moveSpeed);
     }
 
 }
