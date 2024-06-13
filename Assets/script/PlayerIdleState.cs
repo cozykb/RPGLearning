@@ -11,17 +11,6 @@ public class PlayerIdleState : PlayerGroundState
     {
     }
 
-    public override void Enter()
-    //根据状态的不同在这里为状态创建进入方案
-    {
-        base.Enter();
-    }
-
-    public override void Exit()
-    {
-        base.Exit();
-    }
-
 
     public override void Update()
     {
@@ -35,6 +24,6 @@ public class PlayerIdleState : PlayerGroundState
     public override void FixedUpdate()
     {
         base.FixedUpdate();
-        // player.setVelocity(0,rb.velocity.y);
+        player.setVelocity(0,0,100);
     }
 }

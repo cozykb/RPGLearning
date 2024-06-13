@@ -9,24 +9,14 @@ public class PlayerAirState : PlayerState
     {
     }
 
-    public override void Enter()
-    {
-        base.Enter();
-    }
-
-    public override void Exit()
-    {
-        base.Exit();
-    }
-
     public override void Update()
     {
         base.Update();
         if (!player.IsGroundDetected)
-            anim.SetFloat("yVelocity", yVelocity);
+            anim.SetFloat("yVelocity", rb.velocity.y);
         else
         {
-            Debug.Log("jump transform to Idle");
+            Debug.Log("air transform to Idle");
             stateMachine.ChangeState(player.playerIdleState);
         }
         
@@ -36,7 +26,7 @@ public class PlayerAirState : PlayerState
     {
         base.FixedUpdate();
 
-        player.setVelocity(xInput * moveSpeed, rb.velocity.y, 5, moveSpeed);
+        player.fixSetVelocity(xInput * moveSpeed * 0.8f, rb.velocity.y, 50);
     }
 
 }

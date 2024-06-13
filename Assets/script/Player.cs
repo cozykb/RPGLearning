@@ -78,6 +78,11 @@ public class Player : BasicCollision
         base.OnCollisionStay2D(_collision);
     }
 
+    public void LockOutGRoundTimer()
+    {
+        outGRoundTimer += 51;
+    }
+
     // public RaycastHit2D IsGroundDetected() => Physics2D.Raycast(groundCheck.position, Vector2.right * faceDirection, groundCheckDistance, layerMask );
     // private void OnDrawGizmos()
     // {

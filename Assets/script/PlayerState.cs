@@ -61,7 +61,7 @@ public class PlayerState
     public virtual void Update()
     //管理state循环更新
     {   
-        Debug.Log($"update {animBoolName}");
+
         xInput = Input.GetAxis("Horizontal");
         spaceDown = Input.GetKeyDown(KeyCode.Space);
         // 当通过fix update在单个state内更新状态时不能使用=
@@ -80,7 +80,6 @@ public class PlayerState
 
     public virtual void FixedUpdate() 
     {   
-        Debug.Log($"FixedUpdate {animBoolName}");
         yVelocity = rb.velocity.y;
     }
 

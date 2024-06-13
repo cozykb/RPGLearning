@@ -22,19 +22,12 @@ public class PlayerDashState : PlayerState
         }
     }
 
-    public override void Exit()
-    {
-        base.Exit();
-        Debug.Log("exit dash");
-    }
-
     public override void FixedUpdate()
     {
         base.FixedUpdate();
         if (duration > 0)
         {  
-            Debug.Log($"{dashSpeed}");
-            player.fixSetVelocity(dashSpeed * dashDirection, 0, 10, dashSpeed);
+            player.dirctSetVelocity(dashSpeed * dashDirection, 0);
     
         }
         duration -= Time.fixedDeltaTime; 

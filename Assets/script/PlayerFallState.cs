@@ -9,22 +9,16 @@ public class PlayerFallState : PlayerAirState
     {
     }
 
-    public override void Enter()
-    {
-        base.Enter();
-        Debug.Log("enter fall state");
-    }
-
-    public override void Exit()
-    {
-        base.Exit();
-        Debug.Log("exit fall state");
-    }
-
     public override void Update()
     {
         base.Update();
-        Debug.Log("in fall state update");
+
+        if (isJump && player.outGRoundTimer < 50)
+        {
+            stateMachine.ChangeState(player.playerJumpState);
+            player.LockOutGRoundTimer();
+            isJump = false;
+        }
         if (rb.velocity.y == 0)
         {
             stateMachine.ChangeState(player.playerIdleState);
@@ -34,6 +28,5 @@ public class PlayerFallState : PlayerAirState
     public override void FixedUpdate()
     {
         base.FixedUpdate();
-        Debug.Log("in fall state fix update");
     }
 }

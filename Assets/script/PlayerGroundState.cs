@@ -9,21 +9,13 @@ public class PlayerGroundState : PlayerState
     {
     }
 
-    public override void Enter()
-    {
-        base.Enter();
-    }
-
-    public override void Exit()
-    {
-        base.Exit();
-    }
-
 
     public override void Update()
     {
         base.Update();
-        if (isJump && (player.IsGroundDetected || player.IsAttachToWall || player.outGRoundTimer < 5))
+        if (spaceDown)
+            Debug.Log($"jump timer : {player.outGRoundTimer}");
+        if (isJump && (player.IsGroundDetected || player.IsAttachToWall))
         //这里会有一帧的IsGroundDetected=true被传入。
         {   
             player.SetIsGround(false);
@@ -38,9 +30,4 @@ public class PlayerGroundState : PlayerState
         }
     }
 
-    public override void FixedUpdate()
-    {
-        base.FixedUpdate();
-
-    }
 }
