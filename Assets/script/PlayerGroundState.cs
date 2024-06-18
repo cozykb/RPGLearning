@@ -14,14 +14,13 @@ public class PlayerGroundState : PlayerState
     {
         base.Update();
         if (spaceDown)
-            Debug.Log($"jump timer : {player.outGRoundTimer}");
+            Debug.Log($"jump timer : {player.OutGRoundTimer}");
         if (isJump && (player.IsGroundDetected || player.IsAttachToWall))
         //这里会有一帧的IsGroundDetected=true被传入。
         {   
             player.SetIsGround(false);
             //解决被传入的一帧IsGroundDetected=true,但没解决掉
             stateMachine.ChangeState(player.playerJumpState);
-            isJump = false;
         }
         else if (!player.IsGroundDetected && rb.velocity.y != 0)
         {   

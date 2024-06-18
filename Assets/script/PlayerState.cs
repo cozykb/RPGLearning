@@ -11,21 +11,21 @@ public class PlayerState
     protected PlayerStateMachine stateMachine;
     protected Player player;
     #region playerInterface
-    private readonly string animBoolName;
+    public readonly string animBoolName;
     protected float moveSpeed;
     protected float jumpHight;
     protected float dashSpeed;
-    protected int faceDirection;
+    protected float faceDirection;
     // protected float airMoveSpeed;
     protected float yVelocity;
     protected Rigidbody2D rb;
     protected Animator anim;
     protected float xInput;
     protected bool spaceDown;
-    protected bool isJump;
-    protected float dashCD;
-    protected float dashDirection;
-    protected float dashDuration;
+    protected static bool isJump;
+    protected static float dashCD;
+    protected static float dashDirection;
+    protected static float dashDuration;
     private float dashUsageTime;
     #endregion playerInterface
     public PlayerState(Player _player, PlayerStateMachine _stateMachine, string _animBoolName)  
@@ -69,6 +69,12 @@ public class PlayerState
         // 以确保前后的正确同步
         isJump |= spaceDown;
         GetDashInput();
+
+        if(player.IsAttachToWall && !player.IsVelocityZero(rb.velocity.y) && animBoolName != "WallSlide" && xInput * player.WallAttachedDirection > 0)
+        {   
+            stateMachine.ChangeState(player.playerWallState);
+        }
+
     }
 
     public virtual void Exit()

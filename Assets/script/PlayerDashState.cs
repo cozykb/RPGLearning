@@ -20,6 +20,10 @@ public class PlayerDashState : PlayerState
         {
             dashDirection = faceDirection;
         }
+        if (dashDirection == player.WallAttachedDirection)
+        {
+            dashDirection *= -1;
+        }
     }
 
     public override void FixedUpdate()

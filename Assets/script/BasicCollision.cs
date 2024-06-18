@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BasicCollision : MonoBehaviour
@@ -24,7 +25,6 @@ public class BasicCollision : MonoBehaviour
 
     #endregion collision
     public bool IsGroundDetected { get; private set; } 
-    public bool IsGroundStay { get; private set; } 
     public bool IsAttachToWall {get; private set; }
     public int WallAttachedDirection {get; private set; }
     public Vector2 CollisionDirection {get; private set;}
@@ -46,13 +46,14 @@ public class BasicCollision : MonoBehaviour
         GetCollisionDirection(_collision);
         GroundDetector(CollisionDirection);
         WallDetector(CollisionDirection);
-        // Debug.DrawLine(transform.position, new Vector3(transform.position.x + CollisionDirection.x, transform.position.y + CollisionDirection.y), Color.red, 0.1f);
+        Debug.DrawLine(transform.position, new Vector3(transform.position.x + CollisionDirection.x, transform.position.y + CollisionDirection.y), Color.red, 0.1f);
     }
     protected virtual void OnCollisionExit2D(Collision2D _collision) 
     {
         GetCollisionDirection(_collision);
         GroundDetector(CollisionDirection);
         WallDetector(CollisionDirection);
+        Debug.DrawLine(transform.position, new Vector3(transform.position.x + CollisionDirection.x, transform.position.y + CollisionDirection.y), Color.blue, 0.1f);
         // Debug.Log($"Exit :{CollisionDirection}");
     }
     protected virtual void OnCollisionStay2D(Collision2D _collision) 
@@ -62,7 +63,7 @@ public class BasicCollision : MonoBehaviour
         // Debug.Log($"CD 2 : {CollisionDirection}");
         GroundDetector(CollisionDirection);
         WallDetector(CollisionDirection);
-        // Debug.DrawLine(transform.position, new Vector3(transform.position.x + CollisionDirection.x, transform.position.y + CollisionDirection.y), Color.green, 0.1f);
+        Debug.DrawLine(transform.position, new Vector3(transform.position.x + CollisionDirection.x, transform.position.y + CollisionDirection.y), Color.green, 0.1f);
     }
 
     protected virtual void GetCollisionDirection(Collision2D _collision, Color? _color = null)
@@ -93,7 +94,7 @@ public class BasicCollision : MonoBehaviour
 
     protected virtual void GroundDetector(Vector2 _collisionDirection)
     {   
-        if (_collisionDirection.y > 0)
+        if (_collisionDirection.y >= 0.9)
         {   
             // Debug.Log("IsGroundDetected = true;");
             IsGroundDetected = true;
@@ -106,20 +107,21 @@ public class BasicCollision : MonoBehaviour
     }
     protected virtual void WallDetector(Vector2 _collisionDirection)
     {
-        if (_collisionDirection.x != 0)
+        if (Mathf.Abs(_collisionDirection.x) >= 0.9)
         {
             IsAttachToWall = true;
             if (_collisionDirection.x > 0)
             {
-                WallAttachedDirection = 1;
+                WallAttachedDirection = -1;
             }
             else
             {
-                WallAttachedDirection = -1;
+                WallAttachedDirection = 1;
             }
         }
         else
         {
+            WallAttachedDirection = 0;
             IsAttachToWall = false;
         }
     }
@@ -157,49 +159,68 @@ public class BasicCollision : MonoBehaviour
     {
         setVelocity(_xVelocity, _yVelocity , maxAcceleration, lock_down);
         Flip(_xVelocity);
-        EdgeFix();
+        // EdgeFix();
     }
     public void dirctSetVelocity(float _xVelocity, float _yVelocity)
     {
         rb.velocity = new Vector2(_xVelocity, _yVelocity);  
-        EdgeFix();
+        Flip(_xVelocity);
+        // EdgeFix();
     }
 
     private Collider2D Hit(Vector2 _position)
     {
         return Physics2D.OverlapBox(_position, myCollider.bounds.size, 0, LayerMask.GetMask("Ground"));
     }
+    public bool IsVelocityZero(float _velocity)
+    {
+        if (Mathf.Abs(_velocity) > 0.01)
+        {
+            return false;
+        }
+        return true;
+    }
     private void EdgeFix()
     {   
-        Vector3 fixPos = Vector3.zero;
+        List<Vector2> fixDirectionList = new(){Vector2.up, Vector2.down, Vector2.left, Vector2.right};
+        Vector2 fixPos = Vector2.zero;
         //获取速度方向内预期的移动
         Vector2 moveMent = rb.velocity * Time.fixedDeltaTime;
         var futurePosition = transform.position + new Vector3(moveMent.x, moveMent.y);
         Collider2D hit = Hit(futurePosition);
         if (hit != null)
-        {
+        {   
             // Debug.Log($"hit pos : {hit.transform.position}"); 
             //这东西是被撞击到的物体的transform
             // Debug.Log($"cur pos : {transform.position}");
             
-            if (rb.velocity.y != 0)
-            {
-                fixPos = (transform.position - hit.transform.position).normalized;
-            }
-            else
-            {
-                //  横向冲击的情况需要改为加向量方向提拉
-                fixPos = (transform.position + hit.transform.position).normalized;
-            }
+            // if (rb.velocity.y != 0)
+            // {
+            //     fixPos = (transform.position - hit.transform.position).normalized;
+            // }
+            // else
+            // {
+            //     //  横向冲击的情况需要改为加向量方向提拉
+            //     fixPos = (transform.position + hit.transform.position).normalized;
+            // }
             // Debug.DrawLine(transform.position, transform.position + fixPos * moveMent.magnitude * 10 + new Vector3(moveMent.x, moveMent.y), Color.yellow, 10000);
-            Vector3 tryPos = futurePosition + fixPos * moveMent.magnitude * 5 + new Vector3(moveMent.x, moveMent.y);
             Debug.Log("try fix");
-            if (!IsGroundDetected && !Hit(tryPos))
-            {   
-                Debug.Log("fix");
-                // Debug.DrawLine(transform.position, transform.position + fixPos * moveMent.magnitude * 10, Color.red, 10000);
-                transform.position = transform.position + fixPos * moveMent.magnitude * 5;
+            foreach (Vector2 fixDirection in fixDirectionList)
+            {
+
+                if ( Vector2.Dot(fixDirection ,moveMent.normalized) > 0)
+                {
+                    Vector2 tryPos = (Vector2)futurePosition + 5 * moveMent.magnitude * fixDirection  + moveMent;
+                    if (!IsGroundDetected && !Hit(tryPos))
+                    {   
+                        Debug.Log($"fix {fixDirection}");
+                        // Debug.DrawLine(transform.position, transform.position + fixPos * moveMent.magnitude * 10, Color.red, 10000);
+                        transform.position = transform.position + 5 * moveMent.magnitude * (Vector3)fixDirection;
+                        return;
+                    }
+                }
             }
+            
         }
     
     }

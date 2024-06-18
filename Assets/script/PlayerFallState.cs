@@ -13,13 +13,13 @@ public class PlayerFallState : PlayerAirState
     {
         base.Update();
 
-        if (isJump && player.outGRoundTimer < 50)
+        if (isJump && player.OutGRoundTimer < 50)
         {
+            Debug.Log("fall to jump");
             stateMachine.ChangeState(player.playerJumpState);
             player.LockOutGRoundTimer();
-            isJump = false;
         }
-        if (rb.velocity.y == 0)
+        if (rb.velocity.y == 0 || player.IsGroundDetected)
         {
             stateMachine.ChangeState(player.playerIdleState);
         }

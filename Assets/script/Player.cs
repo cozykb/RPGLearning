@@ -26,10 +26,12 @@ public class Player : BasicCollision
     public PlayerState playerJumpState { get; private set; }
     public PlayerState playerFallState { get; private set; }
     public PlayerState playerDashState { get; private set; }
+    public PlayerState playerWallState { get; private set; }
+    public PlayerState playerWallJumpState { get; private set; }
     public PlayerStateMachine stateMachine { get; private set; }
     #endregion states
     #region other
-    public int outGRoundTimer{ get; private set; }
+    public int OutGRoundTimer{ get; private set; }
     #endregion other
 
 
@@ -42,6 +44,8 @@ public class Player : BasicCollision
         playerJumpState = new PlayerJumpState(this, stateMachine, "Jump");
         playerFallState = new PlayerFallState(this, stateMachine, "Fall");
         playerDashState = new PlayerDashState(this, stateMachine, "Dash");
+        playerWallState = new PlayerWallSlideState(this, stateMachine, "WallSlide");
+        playerWallJumpState = new PlayerWallJumpState(this, stateMachine, "Jump");
     }
     protected override void Start() 
     {
@@ -59,7 +63,7 @@ public class Player : BasicCollision
     private void FixedUpdate()
     {
         stateMachine.FixedUpdate();
-        outGRoundTimer = IsGroundDetected ? 0 : outGRoundTimer + 1;
+        OutGRoundTimer = IsGroundDetected ? 0 : OutGRoundTimer + 1;
     }
 
 
@@ -80,7 +84,7 @@ public class Player : BasicCollision
 
     public void LockOutGRoundTimer()
     {
-        outGRoundTimer += 51;
+        OutGRoundTimer += 100;
     }
 
     // public RaycastHit2D IsGroundDetected() => Physics2D.Raycast(groundCheck.position, Vector2.right * faceDirection, groundCheckDistance, layerMask );

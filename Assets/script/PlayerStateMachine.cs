@@ -15,10 +15,13 @@ public class PlayerStateMachine
     }
 
     public void ChangeState(PlayerState _newState)
-    {
+    {   
+        if (_newState.animBoolName != currentState.animBoolName)
+        {
         currentState.Exit();
         currentState = _newState;
         currentState.Enter();  
+        }
     }
 
     public void Update()
