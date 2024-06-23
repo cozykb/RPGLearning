@@ -24,6 +24,7 @@ public class PlayerIdleState : PlayerGroundState
     public override void FixedUpdate()
     {
         base.FixedUpdate();
-        player.setVelocity(0,0,100);
+        if (!player.IsBusy)
+            player.setVelocity(0,0,100);
     }
 }

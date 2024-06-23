@@ -13,19 +13,26 @@ public class PlayerGroundState : PlayerState
     public override void Update()
     {
         base.Update();
-        if (spaceDown)
-            Debug.Log($"jump timer : {player.OutGRoundTimer}");
-        if (isJump && (player.IsGroundDetected || player.IsAttachToWall))
-        //这里会有一帧的IsGroundDetected=true被传入。
-        {   
-            player.SetIsGround(false);
-            //解决被传入的一帧IsGroundDetected=true,但没解决掉
-            stateMachine.ChangeState(player.playerJumpState);
+        if (MouseClick)
+        {
+            stateMachine.ChangeState(player.playerPrimaryAttackState);
         }
-        else if (!player.IsGroundDetected && rb.velocity.y != 0)
-        {   
-            Debug.Log("jump to fall");
-            stateMachine.ChangeState(player.playerFallState);
+        if (!player.IsBusy)
+        {
+            if (spaceDown)
+                Debug.Log($"jump timer : {player.OutGRoundTimer}");
+            if (isJump && (player.IsGroundDetected || player.IsAttachToWall))
+            //这里会有一帧的IsGroundDetected=true被传入。
+            {   
+                player.SetIsGround(false);
+                //解决被传入的一帧IsGroundDetected=true,但没解决掉
+                stateMachine.ChangeState(player.playerJumpState);
+            }
+            else if (!player.IsGroundDetected && rb.velocity.y != 0)
+            {   
+                Debug.Log("jump to fall");
+                stateMachine.ChangeState(player.playerFallState);
+            }
         }
     }
 

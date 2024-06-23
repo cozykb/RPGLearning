@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
+using NUnit.Framework.Constraints;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -21,7 +22,10 @@ public class PlayerState
     protected Rigidbody2D rb;
     protected Animator anim;
     protected float xInput;
+    protected float StateTimer;
     protected bool spaceDown;
+    protected bool MouseClick;
+    protected bool TriggerCalled;
     protected static bool isJump;
     protected static float dashCD;
     protected static float dashDirection;
@@ -56,6 +60,8 @@ public class PlayerState
         Debug.Log($"enter {animBoolName}");
         this.Awake();
         anim.SetBool(animBoolName, true);
+        TriggerCalled = false;
+        
     }
 
     public virtual void Update()
@@ -67,7 +73,9 @@ public class PlayerState
         // 当通过fix update在单个state内更新状态时不能使用=
         // 而是需要|=或等于，在fix update内将变量转化为false
         // 以确保前后的正确同步
+        StateTimer -= Time.deltaTime;
         isJump |= spaceDown;
+        MouseClick = Input.GetKeyDown(KeyCode.Mouse0);
         GetDashInput();
 
         if(player.IsAttachToWall && !player.IsVelocityZero(rb.velocity.y) && animBoolName != "WallSlide" && xInput * player.WallAttachedDirection > 0)
@@ -99,4 +107,11 @@ public class PlayerState
         }
 
     }
+
+    public virtual void AnimationFinishTrigger()
+    {
+        TriggerCalled = true;
+    }
+
+
 }

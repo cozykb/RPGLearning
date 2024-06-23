@@ -20,8 +20,8 @@ public class PlayerMoveState : PlayerGroundState
     }
     public override void FixedUpdate()
     {
-
-        player.setVelocity(xInput * moveSpeed, rb.velocity.y, 50);
+        if (!player.IsBusy)
+            player.setVelocity(xInput * moveSpeed, rb.velocity.y, 50);
 
     }
 }

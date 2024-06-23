@@ -7,7 +7,11 @@ using UnityEngine;
 using UnityEngine.Animations;
 
 public class Player : BasicCollision
-{
+{   
+    #region attack detail
+    [Header("Attack detail")]
+    public Vector2[] AttackMovement;
+    #endregion attack detail
     #region movement
     [Header("movement parameter")]
     public float moveSpeed;
@@ -28,10 +32,12 @@ public class Player : BasicCollision
     public PlayerState playerDashState { get; private set; }
     public PlayerState playerWallState { get; private set; }
     public PlayerState playerWallJumpState { get; private set; }
+    public PlayerState playerPrimaryAttackState { get; private set; }
     public PlayerStateMachine stateMachine { get; private set; }
     #endregion states
     #region other
     public int OutGRoundTimer{ get; private set; }
+    public bool IsBusy{ get; private set; }
     #endregion other
 
 
@@ -46,6 +52,7 @@ public class Player : BasicCollision
         playerDashState = new PlayerDashState(this, stateMachine, "Dash");
         playerWallState = new PlayerWallSlideState(this, stateMachine, "WallSlide");
         playerWallJumpState = new PlayerWallJumpState(this, stateMachine, "Jump");
+        playerPrimaryAttackState = new PlayerPrimaryAttackState(this, stateMachine, "IsAttack");
     }
     protected override void Start() 
     {
@@ -57,7 +64,7 @@ public class Player : BasicCollision
     protected override void Update()
     //这个地方利用stateMachine.currentState进行update以适应不同状态的切换
     {   
-        stateMachine.Update();
+        stateMachine.Update();    
     }
 
     private void FixedUpdate()
@@ -87,6 +94,20 @@ public class Player : BasicCollision
         OutGRoundTimer += 100;
     }
 
+    public void CallAnimationTrigger() => stateMachine.currentState.AnimationFinishTrigger();
+
+    public IEnumerator BusyTime(float _time)
+    //因为StartCoroutine是继承自MMonoBehaviour的，所以这个东西需要写在player下面，以便可以被所引到
+    {
+        IsBusy = true;
+        yield return new WaitForSeconds(_time);
+        IsBusy = false; 
+    }
+
+    public void BusyOccupancy()
+    {
+        IsBusy = true;
+    }
     // public RaycastHit2D IsGroundDetected() => Physics2D.Raycast(groundCheck.position, Vector2.right * faceDirection, groundCheckDistance, layerMask );
     // private void OnDrawGizmos()
     // {
