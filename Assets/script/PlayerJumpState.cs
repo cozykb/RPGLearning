@@ -28,7 +28,7 @@ public class PlayerJumpState : PlayerState
         if (updateAvailable)
         {
             base.Update();
-            if (!player.IsGroundDetected || rb.velocity.y != 0)
+            if (!player.IsGroundDetected && rb.velocity.y != 0)
             {
                 anim.SetFloat("yVelocity", rb.velocity.y);
             }

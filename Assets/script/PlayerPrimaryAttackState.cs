@@ -6,6 +6,7 @@ public class PlayerPrimaryAttackState : PlayerGroundState
     private int ComboCounter;
     private float LastTimeAttacked;
     private float ComboTimeWindow = 2;
+    private float Direction;
     public PlayerPrimaryAttackState(Player _player, PlayerStateMachine _stateMachine, string _animBoolName) : base(_player, _stateMachine, _animBoolName)
     {
     }
@@ -20,6 +21,15 @@ public class PlayerPrimaryAttackState : PlayerGroundState
         player.BusyOccupancy();
         anim.SetInteger("ComboCounter", ComboCounter);
         player.setVelocity(0, 0, 300);
+        float LocalXInput = Input.GetAxis("Horizontal");
+        if ( LocalXInput * faceDirection < 0)
+        {
+            Direction = faceDirection * -1;
+        }
+        else
+        {
+            Direction = faceDirection;
+        }
     }
 
     public override void Exit()
@@ -34,15 +44,7 @@ public class PlayerPrimaryAttackState : PlayerGroundState
     public override void FixedUpdate()
     {
         base.FixedUpdate();
-        float Direction;
-        if (xInput * faceDirection < 0)
-        {
-            Direction = faceDirection * -1;
-        }
-        else
-        {
-            Direction = faceDirection;
-        }
+
         player.setVelocity(player.AttackMovement[ComboCounter].x * Direction, player.AttackMovement[ComboCounter].y, 5);
     }
 
