@@ -1,0 +1,4 @@
+repository "RPGLearning@catkamisama@cloud"
+  path "/"
+    br "/main"
+    co "/main"
